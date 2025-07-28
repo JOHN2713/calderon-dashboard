@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estaciones de Agua Potable en Calderón</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: linear-gradient(90deg, #004d7a, #007acc);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header img {
+      height: 80px;
+    }
+
+    header h1 {
+      margin: 10px 0;
+      font-size: 1.8em;
+    }
+
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 30px 10px;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1500px;
+      padding: 20px 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+
+    h2 {
+      color: #004d7a;
+      margin-top: 40px;
+    }
+
+    iframe {
+      width: 100%;
+      border: none;
+      margin-top: 15px;
+    }
+
+    .pdf-button {
+      margin: 20px 0;
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007acc;
+      color: rgb(13, 42, 160);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .carousel-auto {
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-track-auto {
+      display: flex;
+      width: 98%;
+      animation: autoSlide 5s infinite alternate ease-in-out;
+    }
+
+    .carousel-track-auto img {
+      width: 200%;
+      height: 200%;
+      object-fit: contain;
+      background-color: white;
+    }
+
+    #map {
+      height: 500px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .gallery img {
+      width: 200px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .button-form {
+      margin-top: 20px;
+    }
+
+    .info-card {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .info-section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      margin-top: 30px;
+    }
+
+    .info-section h2 {
+      color: #007acc;
+      margin-bottom: 15px;
+    }
+
+    .pdf-button {
+      background: linear-gradient(135deg, #007acc, #005f9e);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .pdf-button:hover {
+      background: #005f9e;
+      transform: scale(1.05);
+    }
+
+    #map {
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery img {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-horizontal {
+      margin-top: 60px;
+      padding: 30px 20px;
+      background-color: #e3f2fd;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .timeline-horizontal h2 {
+      color: #004d7a;
+      margin-bottom: 40px;
+    }
+
+    .timeline-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .timeline-cards .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 280px;
+      text-align: left;
+      transition: transform 0.3s ease;
+    }
+
+    .timeline-cards .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-year {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+      color: #004d7a;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 0.95em;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <img src="{{ url_for('static', filename='LOGONWJ.png') }}" alt="Logo FONAG">
+    <div style="text-align:right">
+      <h1>Estaciones que Suministran Agua Potable en Calderón</h1>
+      <h3>Grupo N°12</h3>
+      <h4>
+        Nayeli Cabrera William Vargas Jhony Vilaña
+      </h4>
+    </div>
+  </header>
+  <div class="wrapper">
+    <div class="container">
+      <!-- Carrusel de imágenes -->
+      <h2>📷 Vistas Técnicas de Calderón</h2>
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <img src="{{ url_for('static', filename='Calderon-Autocad.jpg') }}" alt="Calderón 1"
+          style="width: 45%; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+        <img src="{{ url_for('static', filename='CALDERON-PARROQUIA.jpg') }}" alt="Calderón 2"
+          style="width: 45%; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+      </div>
+
+      <div class="container">
+
+        <h2>📌 Mapa Interactivo de Estaciones</h2>
+        <div id="map"></div>
+
+        <script>
+          const map = L.map('map').setView([-0.09, -78.42], 13);
+
+          // Capa base
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+          }).addTo(map);
+
+          // Icono personalizado
+          const estacionIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '💧',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+          });
+
+          // Estaciones
+          const estaciones = [
+            { nombre: 'C-20 Calderón', tipo: 'Climatológica', lat: -0.097, lon: -78.422 },
+            { nombre: 'DQS01HC01 Dique Sur', tipo: 'Hidrométrica', lat: -0.105, lon: -78.41 },
+            { nombre: 'H5006 Aglla', tipo: 'Hidrométrica', lat: -0.09, lon: -78.43 }
+          ];
+          estaciones.forEach(e => {
+            L.marker([e.lat, e.lon], { icon: estacionIcon })
+              .addTo(map)
+              .bindPopup(`<b>${e.nombre}</b><br>${e.tipo}`);
+          });
+
+          // Ruta principal extendida (Oyacoto hasta Carapungo)
+          const rutaPrincipal = [
+            [-0.11426740766544147, -78.38277350437336],  // 1. Oyacoto
+            [-0.10171841108850495, -78.40424752727067],  // 2.
+            [-0.09605359419834752, -78.40956902991462],  // 3.
+            [-0.08403731266976225, -78.42888093480909],  // 4.
+            [-0.07845832354349443, -78.43051171788676],  // 5. San Miguel del Común
+            [-0.06549789980967087, -78.42819428936164],  // 6. Ingreso Calderón
+            [-0.05167916625140453, -78.4289667655452],   // 7. Estación C-20
+            [-0.04841760131902378, -78.42682099834602],  // 8. Marianitas
+            [-0.04034951901118582, -78.42493272320021]   // 9. Carapungo
+          ];
+          L.polyline(rutaPrincipal, {
+            color: 'blue',
+            weight: 5,
+            opacity: 0.8,
+            dashArray: '10, 6',
+            lineJoin: 'round'
+          }).addTo(map).bindPopup("Ruta principal extendida");
+
+          // Ramales desde puntos intermedios
+          const ramales = [
+            [
+              [-0.07845832354349443, -78.43051171788676],  // desde punto 5
+              [-0.07773643258524444, -78.44558758431755]  // dirección alterna 1
+
+
+            ]
+            ,
+            [
+              [-0.06549789980967087, -78.42819428936164],  // desde punto 6
+              [-0.07884052510461735, -78.4229816533012]  // dirección alterna 2
+            ]
+            ,
+            [
+              [-0.05167916625140453, -78.4289667655452],  // desde punto 7
+              [-0.00960962241502803, -78.4486688214869]  // dirección alterna 3
+            ]
+
+          ];
+
+          ramales.forEach(ramal => {
+            L.polyline(ramal, {
+              color: 'blue',
+              weight: 4,
+              opacity: 0.5,
+              dashArray: '6, 4'
+            }).addTo(map).bindPopup("Ramal de distribución");
+          });
+
+          // Zonas de distribución
+          const zonasDistribucion = [
+            { nombre: "San Miguel del Común", coords: [-0.07845832354349443, -78.43051171788676] },
+            { nombre: "Calderón Centro", coords: [-0.06549789980967087, -78.42819428936164] },
+            { nombre: "Marianitas", coords: [-0.04841760131902378, -78.42682099834602] },
+            { nombre: "Carapungo", coords: [-0.04034951901118582, -78.42493272320021] },
+            { nombre: "Carapungo", coords: [-0.07773643258524444, -78.44558758431755] },
+            { nombre: "Carapungo", coords: [-0.04034951901118582, -78.42493272320021] }
+            , { nombre: "Carapungo", coords: [-0.07884052510461735, -78.4229816533012] }
+            , { nombre: "MITADL DEL MUNDO", coords: [-0.00960962241502803, -78.4486688214869] }
+
+
+          ];
+          zonasDistribucion.forEach(z => {
+            L.circleMarker(z.coords, {
+              radius: 7,
+              color: '#007acc',
+              fillColor: '#007acc',
+              fillOpacity: 0.9
+            }).addTo(map).bindPopup(`Zona: <b>${z.nombre}</b>`);
+          });
+
+          // Leyenda
+          const legend = L.control({ position: "bottomright" });
+          legend.onAdd = function () {
+            const div = L.DomUtil.create("div", "legend");
+            div.innerHTML = `
+      <b>🗺️ Leyenda</b><br>
+      <i style="background: blue; display:inline-block; width:15px; height:15px;"></i> Ruta y Ramales<br>
+      <i style="background: #007acc; display:inline-block; width:15px; height:15px;"></i> Zonas de distribución<br>
+      <span style="font-size: 18px;">💧</span> Estaciones de agua
+    `;
+            return div;
+          };
+          legend.addTo(map);
+        </script>
+
+
+
+
+        <h2>🖼️ Galería de Imágenes</h2>
+        <div class="gallery">
+          <img src="{{ url_for('static', filename='calderon1.jpg') }}" alt="Vista aérea Calderón">
+          <img src="{{ url_for('static', filename='calderon.jpeg') }}" alt="Cuenca Guayllabamba">
+          <img src="{{ url_for('static', filename='obra_agua.jpg') }}" alt="Obra de agua potable">
+          <img src="{{ url_for('static', filename='plantas_tratamiento.jpg') }}" alt="Plantas de tratamiento">
+        </div>
+
+        <h2>Red de estaciones hidrometereológicas de FONAG</h2>
+        <p>Visualización del mapa oficial de estaciones del FONAG a nivel nacional</p>
+        <iframe height="600" src="https://geovisor.fonag.org.ec/catalogue/#/dataset/8"></iframe>
+
+        <h2>Estaciones que Pertenecen a la Microcuenca del Guayllabamba Alto</h2>
+        <p>Estas estaciones fueron seleccionadas por su ubicación estratégica y relevancia en caudal, temperatura y
+          nivel de
+          agua.</p>
+        <ul>
+          <li>C-20 Calderón (climatológico)</li>
+          <li>DQS01HC01 Dique Sur (Hidrométrica)</li>
+          <li>H5006 Aglla en Captación (Hidrométrica)</li>
+          <li>H5026 Carihuayco en Paluguillo (Hidrométrica)</li>
+          <li>PCA2 Carihuayco Bajo (Hidrométrica)</li>
+          <li>PEC Encañada (Hidrométrica)</li>
+        </ul>
+
+        <a class="pdf-button" href="{{ url_for('static', filename='Estudio-de-Red-hidrometeorológica.pdf') }}" download>
+          📥 Descargar Fuente (PDF)
+        </a>
+
+        <h2>Dashboard de Indicadores Hídricos</h2>
+        <iframe title="proyecto-Hidro" height="500"
+          src="https://app.powerbi.com/view?r=eyJrIjoiY2ViYTE5ODQtNGJhZC00YzI4LTgzZDUtMTdkOGEwNWUyYmFmIiwidCI6IjhjYTUyZTJiLTFkMjAtNDI3NC05YTEzLWJkNzZlY2NiODFkMSIsImMiOjR9"
+          allowfullscreen="true"></iframe>
+
+        <div class="info-section">
+          <h2>🧠 Interpretación del Análisis de Indicadores Hídricos</h2>
+          {{ interpretacion|safe }}
+        </div>
+
+        <div class="info-section">
+          <h2>📰 Noticias Relacionadas</h2>
+          {{ noticias|safe }}
+        </div>
+
+        <div class="info-section">
+          <h2>📘 ¿Sabías que...?</h2>
+          {{ curiosidad|safe }}
+        </div>
+        <!-- LÍNEA DE TIEMPO HORIZONTAL DEL AGUA EN CALDERÓN -->
+        <section class="timeline-horizontal">
+          <h2>📜 Historia del Agua en Calderón</h2>
+          <div class="timeline-cards">
+            <div class="card">
+              <div class="card-year">1995</div>
+              <h3>Primeras redes de captación comunitaria</h3>
+              <p>Vecinos organizados construyen rudimentarias redes de captación de agua desde vertientes cercanas.</p>
+            </div>
+            <div class="card">
+              <div class="card-year">2003</div>
+              <h3>Ingreso al sistema de agua potable de Quito</h3>
+              <p>Calderón se integra oficialmente a la red de agua potable gestionada por EPMAPS.</p>
+            </div>
+            <div class="card">
+              <div class="card-year">2011</div>
+              <h3>Instalación de la estación climatológica C-20</h3>
+              <p>Se incorpora la estación para monitorear precipitación y caudales.</p>
+            </div>
+            <div class="card">
+              <div class="card-year">2018</div>
+              <h3>Inicio de proyecto de modernización de redes</h3>
+              <p>Se empieza el reemplazo de tuberías viejas y la mejora en plantas de tratamiento cercanas.</p>
+            </div>
+            <div class="card">
+              <div class="card-year">2024</div>
+              <h3>Monitoreo digital y datos abiertos</h3>
+              <p>Consolidación de sistemas de monitoreo en tiempo real, acceso a datos abiertos y dashboard público.</p>
+            </div>
+          </div>
+        </section>
+      </div> <!-- fin container -->
+    </div> <!-- fin wrapper -->
+</body>
+
+</html>

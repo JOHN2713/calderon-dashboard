@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Inteligente - Estaciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-white text-gray-800 font-sans">
+
+    <header class="bg-blue-800 text-white p-6 text-center">
+        <h1 class="text-3xl font-bold">Chat con IA - Estaciones en Calderón</h1>
+    </header>
+    <div class="text-center mt-10">
+        <a href="{{ url_for('dashboard') }}"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded shadow transition">
+            🌐 Volver al Dashboard
+        </a>
+    </div>
+
+    <main class="max-w-3xl mx-auto px-6 py-10">
+        <section class="bg-gray-50 p-6 rounded-lg shadow" id="chatbot">
+            <h2 class="text-xl font-bold text-blue-700 mb-4">🤖 Haz tus preguntas sobre las estaciones, agua potable o
+                indicadores</h2>
+
+            <div class="border rounded-lg p-4 h-80 overflow-y-auto bg-white text-sm" id="chatbox">
+                <div class="text-gray-400 italic">🧠 Chat iniciado…</div>
+            </div>
+
+            <div class="mt-4 flex gap-2">
+                <input type="text" id="userInput" placeholder="Escribe tu pregunta..."
+                    class="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <button onclick="enviarMensaje()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Enviar</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function enviarMensaje() {
+            const input = document.getElementById("userInput");
+            const chatbox = document.getElementById("chatbox");
+            const mensaje = input.value.trim();
+            if (!mensaje) return;
+
+            chatbox.innerHTML += `<div class="mt-2"><b>Tú:</b> ${mensaje}</div>`;
+            input.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: mensaje })
+                });
+                const data = await response.json();
+
+                chatbox.innerHTML += `<div class="mt-2 text-blue-800"><b>Gemini:</b> ${data.response}</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } catch (error) {
+                chatbox.innerHTML += `<div class="mt-2 text-red-600">⚠️ Error al enviar mensaje</div>`;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

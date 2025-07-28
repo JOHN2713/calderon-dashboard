@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio - Estaciones Calderón</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="min-h-screen flex flex-col items-center justify-center text-center p-6">
+    <img src="{{ url_for('static', filename='LOGONWJ.png') }}" alt="Logo" class="w-40 mb-6">
+    <h1 class="text-3xl font-bold text-blue-800">Estaciones de Agua Potable en Calderón</h1>
+    <p class="mt-4 max-w-xl text-gray-600">Explora la visualización de estaciones, indicadores hídricos y realiza preguntas al asistente IA.</p>
+
+    <div class="mt-8 flex flex-col md:flex-row gap-4">
+      <a href="{{ url_for('dashboard') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold">🌎 Ir al Dashboard</a>
+      <a href="{{ url_for('chatemmap') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">🤖 Chat con IA</a>
+    </div>
+  </div>
+</body>
+</html>
