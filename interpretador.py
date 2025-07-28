@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
 
-genai.configure(api_key="AIzaSyCcy49AHJStyFMq2EbWb2Dpl3AgAI6Vppo")  # reemplaza con tu API real
+load_dotenv()  # Carga las variables del archivo .env
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
 app = Flask(__name__)
@@ -26,10 +30,9 @@ Debes responder de forma clara, técnica pero comprensible, sobre:
 - estaciones como DQS01HC01, H5006, H5026;
 - variables como el caudal máximo;
 - interpretación de indicadores;
-- uso de herramientas como Leaflet, mapas interactivos y dashboards de Power BI.
 - adicional tienes estas urls: https://www.ambiente.gob.ec/wp-content/uploads/downloads/2014/07/Estudio-de-Red-hidrometeorol%C3%B3gica.pdf, https://www.fonag.org.ec/web/wp-content/uploads/2024/06/Anuario-hidroclimatico-2020.pdf
 
-No inventes datos, responde sólo dentro del contexto de análisis ambiental, hidrológico y técnico del proyecto.
+No inventes datos, responde sólo dentro del contexto de análisis ambiental, hidrológico y técnico del proyecto en no más de 3 líneas.
 """
 
 @app.route('/chat', methods=['POST'])
@@ -47,4 +50,9 @@ def chat():
         return jsonify({"response": "⚠️ Ocurrió un error. Verifica tu conexión o vuelve a intentar más tarde."})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    is_local = os.environ.get("RENDER", "") == ""  # RENDER env var está vacía en local
+    app.run(
+        host='0.0.0.0',
+        port=int(os.environ.get("PORT", 5000)),
+        debug=is_local
+    )
