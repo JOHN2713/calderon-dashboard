@@ -13,6 +13,7 @@
     <p class="mt-4 max-w-xl text-gray-600">Explora la visualización de estaciones, indicadores hídricos y realiza preguntas al asistente IA.</p>
 
     <div class="mt-8 flex flex-col md:flex-row gap-4">
+      <a href="{{ url_for('problematicas') }}" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold">⚠️ Problemática</a>
       <a href="{{ url_for('dashboard') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold">🌎 Ir al Dashboard</a>
       <a href="{{ url_for('chatemmap') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">🤖 Chat con IA</a>
     </div>

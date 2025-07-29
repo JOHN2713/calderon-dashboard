@@ -259,32 +259,118 @@
     </div>
 
     <script>
-        window.onload = function () {
-            const map = L.map('map').setView([-0.09, -78.42], 13);
+        const map = L.map('map').setView([-0.09, -78.42], 13);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18
-            }).addTo(map);
+        // Capa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
 
-            const estacionIcon = L.divIcon({
-                className: 'custom-icon',
-                html: '💧',
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
-            });
+        // Icono personalizado
+        const estacionIcon = L.divIcon({
+            className: 'custom-icon',
+            html: '💧',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
 
-            const estaciones = [
-                { nombre: 'C-20 Calderón', tipo: 'Climatológica', lat: -0.097, lon: -78.422 },
-                { nombre: 'DQS01HC01 Dique Sur', tipo: 'Hidrométrica', lat: -0.105, lon: -78.41 },
-                { nombre: 'H5006 Aglla', tipo: 'Hidrométrica', lat: -0.09, lon: -78.43 }
-            ];
+        // Estaciones
+        const estaciones = [
+            { nombre: 'C-20 Calderón', tipo: 'Climatológica', lat: -0.097, lon: -78.422 },
+            { nombre: 'DQS01HC01 Dique Sur', tipo: 'Hidrométrica', lat: -0.105, lon: -78.41 },
+            { nombre: 'H5006 Aglla', tipo: 'Hidrométrica', lat: -0.09, lon: -78.43 }
+        ];
+        estaciones.forEach(e => {
+            L.marker([e.lat, e.lon], { icon: estacionIcon })
+                .addTo(map)
+                .bindPopup(`<b>${e.nombre}</b><br>${e.tipo}`);
+        });
 
-            estaciones.forEach(e => {
-                L.marker([e.lat, e.lon], { icon: estacionIcon })
-                    .addTo(map)
-                    .bindPopup(`<b>${e.nombre}</b><br>${e.tipo}`);
-            });
+        // Ruta principal extendida (Oyacoto hasta Carapungo)
+        const rutaPrincipal = [
+            [-0.11426740766544147, -78.38277350437336],  // 1. Oyacoto
+            [-0.10171841108850495, -78.40424752727067],  // 2.
+            [-0.09605359419834752, -78.40956902991462],  // 3.
+            [-0.08403731266976225, -78.42888093480909],  // 4.
+            [-0.07845832354349443, -78.43051171788676],  // 5. San Miguel del Común
+            [-0.06549789980967087, -78.42819428936164],  // 6. Ingreso Calderón
+            [-0.05167916625140453, -78.4289667655452],   // 7. Estación C-20
+            [-0.04841760131902378, -78.42682099834602],  // 8. Marianitas
+            [-0.04034951901118582, -78.42493272320021]   // 9. Carapungo
+        ];
+        L.polyline(rutaPrincipal, {
+            color: 'blue',
+            weight: 5,
+            opacity: 0.8,
+            dashArray: '10, 6',
+            lineJoin: 'round'
+        }).addTo(map).bindPopup("Ruta principal extendida");
+
+        // Ramales desde puntos intermedios
+        const ramales = [
+            [
+                [-0.07845832354349443, -78.43051171788676],  // desde punto 5
+                [-0.07773643258524444, -78.44558758431755]  // dirección alterna 1
+
+
+            ]
+            ,
+            [
+                [-0.06549789980967087, -78.42819428936164],  // desde punto 6
+                [-0.07884052510461735, -78.4229816533012]  // dirección alterna 2
+            ]
+            ,
+            [
+                [-0.05167916625140453, -78.4289667655452],  // desde punto 7
+                [-0.00960962241502803, -78.4486688214869]  // dirección alterna 3
+            ]
+
+        ];
+
+        ramales.forEach(ramal => {
+            L.polyline(ramal, {
+                color: 'blue',
+                weight: 4,
+                opacity: 0.5,
+                dashArray: '6, 4'
+            }).addTo(map).bindPopup("Ramal de distribución");
+        });
+
+        // Zonas de distribución
+        const zonasDistribucion = [
+            { nombre: "San Miguel del Común", coords: [-0.07845832354349443, -78.43051171788676] },
+            { nombre: "Calderón Centro", coords: [-0.06549789980967087, -78.42819428936164] },
+            { nombre: "Marianitas", coords: [-0.04841760131902378, -78.42682099834602] },
+            { nombre: "Carapungo", coords: [-0.04034951901118582, -78.42493272320021] },
+            { nombre: "Carapungo", coords: [-0.07773643258524444, -78.44558758431755] },
+            { nombre: "Carapungo", coords: [-0.04034951901118582, -78.42493272320021] }
+            , { nombre: "Carapungo", coords: [-0.07884052510461735, -78.4229816533012] }
+            , { nombre: "MITADL DEL MUNDO", coords: [-0.00960962241502803, -78.4486688214869] }
+
+
+        ];
+        zonasDistribucion.forEach(z => {
+            L.circleMarker(z.coords, {
+                radius: 7,
+                color: '#007acc',
+                fillColor: '#007acc',
+                fillOpacity: 0.9
+            }).addTo(map).bindPopup(`Zona: <b>${z.nombre}</b>`);
+        });
+
+        // Leyenda
+        const legend = L.control({ position: "bottomright" });
+        legend.onAdd = function () {
+            const div = L.DomUtil.create("div", "legend");
+            div.innerHTML = `
+      <b>🗺️ Leyenda</b><br>
+      <i style="background: blue; display:inline-block; width:15px; height:15px;"></i> Ruta y Ramales<br>
+      <i style="background: #007acc; display:inline-block; width:15px; height:15px;"></i> Zonas de distribución<br>
+      <span style="font-size: 18px;">💧</span> Estaciones de agua
+    `;
+            return div;
         };
+        legend.addTo(map);
     </script>
     <a href="{{ url_for('chatemmap') }}"
         class="fixed bottom-6 right-6 bg-blue-600 hover:bg-green-700 text-white px-4 py-3 rounded-full shadow-lg text-sm font-semibold z-50 transition duration-200"

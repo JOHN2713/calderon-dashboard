@@ -22,6 +22,10 @@ def dashboard():
 def chatemmap():
     return render_template("chatemmap.html")
 
+@app.route('/problematicas')
+def problematicas():
+    return render_template('problematicas.html')
+
 # Prompt base de comportamiento (contexto)
 PROMPT_BASE = """
 Eres un asistente inteligente especializado en temas de agua potable, monitoreo hidrológico y gestión de estaciones de medición en Quito, especialmente en Calderón.
@@ -32,7 +36,7 @@ Debes responder de forma clara, técnica pero comprensible, sobre:
 - interpretación de indicadores;
 - adicional tienes estas urls: https://www.ambiente.gob.ec/wp-content/uploads/downloads/2014/07/Estudio-de-Red-hidrometeorol%C3%B3gica.pdf, https://www.fonag.org.ec/web/wp-content/uploads/2024/06/Anuario-hidroclimatico-2020.pdf
 
-No inventes datos, responde sólo dentro del contexto de análisis ambiental, hidrológico y técnico del proyecto en no más de 3 líneas.
+No inventes datos, responde sólo dentro del contexto de análisis ambiental, hidrológico y técnico del proyecto en no más de 8 líneas.
 """
 
 @app.route('/chat', methods=['POST'])
