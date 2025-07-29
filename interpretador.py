@@ -26,6 +26,10 @@ def chatemmap():
 def problematicas():
     return render_template('problematicas.html')
 
+@app.route('/flujoagua')
+def flujoagua():
+    return render_template('flujoagua.html')
+
 # Prompt base de comportamiento (contexto)
 PROMPT_BASE = """
 Eres un asistente inteligente especializado en temas de agua potable, monitoreo hidrológico y gestión de estaciones de medición en Quito, especialmente en Calderón.

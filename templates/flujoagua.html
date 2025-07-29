@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Hídrico - Calderón</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+    h1 { color: #0a4d8c; }
+    .kpi { display: inline-block; width: 30%; background: #fff; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+    .chart-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard del Flujo de Agua - Calderón</h1>
+
+  <div class="kpi">
+    <h2>Caudal Actual Distribuido</h2>
+    <p><strong>650 L/s</strong></p>
+  </div>
+  <div class="kpi">
+    <h2>Población Estimada</h2>
+    <p><strong>250,000 Habitantes</strong></p>
+  </div>
+  <div class="kpi">
+    <h2>Demanda Estimada</h2>
+    <p><strong>45,000,000 L/día</strong></p>
+  </div>
+
+  <div class="chart-container">
+    <h3>Demanda vs. Caudal Disponible por Mes</h3>
+    <canvas id="lineChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>Estado del Abastecimiento por Mes</h3>
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <script>
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+    // Datos oficiales de EPMAPS 2019 (columna promedio 𝑿̄, en m³/s convertidos a L/día)
+    const caudalDisponible = [
+      1.70, 1.98, 2.02, 2.28, 2.55, 2.80, 2.93, 2.16, 1.97, 1.75, 1.73, 1.62
+    ].map(x => x * 1000 * 86400); // Convertir de m³/s a L/día
+
+    // Demanda estimada por mes
+    const demanda = [45000000, 45000000, 45000000, 45000000, 45000000, 45000000, 60000000, 62500000, 62000000, 55000000, 50000000, 45000000];
+
+    new Chart(document.getElementById("lineChart"), {
+      type: "line",
+      data: {
+        labels: meses,
+        datasets: [
+          {
+            label: "Caudal Disponible (L/día)",
+            data: caudalDisponible,
+            borderColor: "#1f77b4",
+            fill: false
+          },
+          {
+            label: "Demanda Estimada (L/día)",
+            data: demanda,
+            borderColor: "#d62728",
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const estado = demanda.map((d, i) => caudalDisponible[i] - d);
+
+    new Chart(document.getElementById("barChart"), {
+      type: "bar",
+      data: {
+        labels: meses,
+        datasets: [
+          {
+            label: "Excedente (+) o Déficit (-) (L/día)",
+            data: estado,
+            backgroundColor: estado.map(x => x >= 0 ? "#2ca02c" : "#ff7f0e")
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
