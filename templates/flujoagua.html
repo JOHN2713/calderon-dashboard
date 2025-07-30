@@ -115,7 +115,12 @@
 
 <body>
     <h1 class="text-xl font-bold text-blue-800 mb-4"><strong>Dashboard del Flujo de Agua - Calderón</strong></h1>
-
+    <div class="text-center my-6">
+        <a href="{{ url_for('bellavista') }}"
+            class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition">
+            💧 Flujo de Agua - Bellavista
+        </a>
+    </div>
     <div class="kpi">
         <h2>Caudal Máximo Potencial</h2>
         <p><strong>1,300 L/s</strong></p>
